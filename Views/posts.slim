@@ -1,0 +1,11 @@
+h1 Alla inlägg
+a href="/create_post" create
+table
+  - posts_all.each do |post|
+    tr
+      td 
+        - hej = post["ID"] 
+        a href="/thread?id=#{hej}" = post["Subject"]   
+      td = post["Text"]
+
+/ #{=post['ID']}
