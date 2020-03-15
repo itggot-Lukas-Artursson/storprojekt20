@@ -2,6 +2,7 @@ require 'sinatra'
 require 'bcrypt'
 require 'slim'
 require 'sqlite3'
+require_relative './model.rb'
 
 db = SQLite3::Database.new("db/databas_storprojekt.db")
 db.results_as_hash = true   
@@ -23,57 +24,47 @@ get('/login_ok') do
 end
 
 get('/all_posts') do
-    result = db.execute("SELECT ID, Subject, Text FROM Post")
+    result = show_all_posts()
     slim(:posts,locals:{posts_all:result})
 end
 
 post('/login') do
-    # result= db.execute("UPDATE user SET password_digest='"+BCrypt::Password.create("xy")+"'")
-
-    result= db.execute("SELECT id, password_digest FROM user WHERE email=?", params["username"])
-
-    if result.empty?
-        redirect('/login_error?error=user_id')
-    end
-  
-    if BCrypt::Password.new(result.first["password_digest"]) == params["password"]
-        session[:user_id] = result.first["id"]
-        redirect('/login_ok')
-    else
-        redirect('/login_error')
-    end
+    login()
 end
 
-post('/register') do
-    email = params[:email]
-    username = params[:username]
-    password = params[:password]
-    password_digest = BCrypt::Password.create(password)
-    db.execute('INSERT INTO USER (username, email, password_digest) VALUES (?,?,?)', username, email, password_digest)
+post('/register_user') do
+    register_user()
 end
 
-
-get('/register') do
-    slim(:register)
+get('/register_user') do
+    slim(:register_user)
 end
 
 get('/thread') do
-    result = db.execute("SELECT ID, Subject, Text FROM Post WHERE ID=#{params[:id]}")
+    result = thread()
     slim(:thread,locals:{posts_all:result})
     # slim(:thread)
 end
 
-
-post('/create_post') do
-    headline = params[:headline]
-    body = params[:body]
-    db.execute('INSERT INTO Post (heading, text) VALUES (?,?)', headline, body)  
-    # I db browsér har jag subjekt som måste skrivas in under create för att det ska fungera
+post('/new_post') do
+  new_post('lukas')
 end
 
-get('/create_post') do
-    slim(:create_post)
+get('/new_post') do
+    slim(:new_post)
 end
+
+post('/upload_image') do
+
+    #Skapa en sträng med join "./public/uploaded_pictures/cat.png"
+    path = File.join("./public/uploaded_pictures/",params[:file][:filename])
+    
+    #Skriv innehållet i tempfile till path
+    File.write(path,File.read(params[:file][:tempfile]))
+    
+    redirect('/new_post')
+   end
+
 
 #     slim(:login)
 
@@ -82,4 +73,6 @@ end
 #     password_digest = BCrypt::Password.create(password)
 #     db.execute('INSERT INTO USER (username, password) VALUES (?,?)', username, password_digest)
 # end
+
+
 
