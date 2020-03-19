@@ -1,1 +1,13 @@
 h2 error
+
+-if params[:error] == "already_registered"
+  h2 already_registered
+
+-if params[:error] == "wrong_password"
+  h2 wrong_password
+
+-if params[:error] == "user_id"
+  h2 wrong userid
+
+-else 
+  h2 wrong login

@@ -29,7 +29,14 @@ get('/all_posts') do
 end
 
 post('/login') do
-    login()
+    id = login(params[:username], params[:password])
+    if id == -1 
+        redirect('/login_error?error=wrong_email')
+    elsif id == -2
+        redirect('/login_error?error=wrong_password')
+    else
+        redirect('/login_ok')
+    end
 end
 
 post('/register_user') do
@@ -47,7 +54,7 @@ get('/thread') do
 end
 
 post('/new_post') do
-  new_post('lukas')
+    new_post(1,params[:headline], params[:body], params[:image])
 end
 
 get('/new_post') do
