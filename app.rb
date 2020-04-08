@@ -1,3 +1,4 @@
+
 require 'sinatra'
 require 'bcrypt'
 require 'slim'
@@ -8,24 +9,25 @@ db = SQLite3::Database.new("db/databas_storprojekt.db")
 db.results_as_hash = true   
 
 get('/') do
-    slim(:index)
+    result = show_categories()
+    slim(:index,locals:{categories:result})
 end
 
 get('/login') do
-    slim(:login)
+    slim(:"user/login")
 end
 
 get('/login_error') do
-    slim(:login_error)
+    slim(:"user/login_error")
 end 
 
 get('/login_ok') do
-    slim(:login_ok)
+    slim(:"user/login_ok")
 end
 
-get('/all_posts') do
+get('/show_all') do
     result = show_all_posts()
-    slim(:posts,locals:{posts_all:result})
+    slim(:"post/show_all",locals:{posts_all:result})
 end
 
 post('/login') do
@@ -44,21 +46,23 @@ post('/register_user') do
 end
 
 get('/register_user') do
-    slim(:register_user)
+    slim(:"user/register_user")
 end
 
-get('/thread') do
-    result = thread()
-    slim(:thread,locals:{posts_all:result})
+get('/show_thread') do
+    result = thread(params[:id])
+    result_a = answer(params[:id])
+    slim(:"post/thread",locals:{thread_all:result, answer_all:result_a})
     # slim(:thread)
 end
 
 post('/new_post') do
     new_post(1,params[:headline], params[:body], params[:image])
+    redirect('/post/show_all')
 end
 
 get('/new_post') do
-    slim(:new_post)
+    slim(:"post/new_post")
 end
 
 post('/upload_image') do
@@ -69,8 +73,27 @@ post('/upload_image') do
     #Skriv innehållet i tempfile till path
     File.write(path,File.read(params[:file][:tempfile]))
     
-    redirect('/new_post')
+    redirect('/post/new_post')
    end
+
+post('/comment') do 
+    comment(params[:comment])
+    redirect('/post/thread')
+end
+
+
+get('/comment') do
+    slim(params[:id])
+end 
+
+
+get('/show_category_posts') do
+    result = show_category_posts(params[:id])
+    category_name = get_category_name(params[:id])
+    slim(:"category/show_category_posts",locals:{category_posts:result, category_name:category_name})
+    # slim(:thread)
+end
+
 
 
 #     slim(:login)

@@ -25,9 +25,15 @@ def register_user()
     end
 end
 
-def thread(id)
+def thread(thread_id)
     db = connect_to_db()
-    result = db.execute("SELECT PostID, Heading, Text FROM Post WHERE PostID=#{id} union all SELECT  AnswerID, Heading, Text FROM Answer WHERE PostID=#{id}")
+    result = db.execute("SELECT PostID, Heading, Text FROM Post WHERE PostID=#{thread_id}")
+    return result   
+end
+
+def answer(thread_id)
+    db = connect_to_db()
+    result = db.execute("SELECT AnswerID, Text FROM Answer WHERE PostID=#{thread_id}")
     return result   
 end
 
@@ -53,4 +59,30 @@ def show_all_posts()
     result = db.execute("SELECT PostID, Heading, Text FROM Post")
     return result
 end
+
+def comment()
+    db = connect_to_db()
+    db.execute('INSERT INTO Answer (AnswerID, Text, Image, PostID) VALUES (?,?,?,?)',AnswerID, Text, Image, PostID)  
+
+end
+
+def show_categories()
+    db = connect_to_db()
+    result = db.execute("SELECT CategoryID, Name FROM Category")
+    return result
+end
+
+def show_category_posts(categoryID)
+    db = connect_to_db()
+    result = db.execute("SELECT p.PostID, Heading FROM Post p inner join Relation_post_category r ON p.PostID= r.postID WHERE r.CategoryID=? ",categoryID)
+    return result
+end
+
+
+def get_category_name(categoryID)
+    db = connect_to_db()
+    result = db.execute("SELECT Name FROM Category WHERE CategoryID=?",categoryID)
+    return result
+end
+
 
