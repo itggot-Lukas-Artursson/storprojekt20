@@ -1,0 +1,12 @@
+form action="/" 
+ input type="submit" value="Home"
+h2 Edit answer
+form action="/answer/#{params[:answerid]}/edit" method="post"
+    input type="text" name="text" value="#{text}"/
+    input type="submit" value="Change"/
+-if not session[:error].nil?
+    br
+    = session[:error]
+    -session[:error] = nil
+
+-session[:requester] = request.referer

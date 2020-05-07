@@ -1,0 +1,44 @@
+form action="/" 
+ input type="submit" value="Home"
+ 
+- session[:requester]=request.referer
+- thread_all.each do |thread|   
+   h1 = thread["Heading"] 
+   = thread["Text"]
+   br      
+   br      
+   'Posted by: 
+   = thread["Username"]
+   -if session[:userid] == thread["Userid"] or  session[:admin] == 1
+      br
+      a href="/posts/#{params[:id]}/delete" Delete post
+      br
+      a href="/posts/#{params[:id]}/edit" Edit post
+
+   -if session[:userid] 
+      form action="/posts/#{params[:id]}/answer_new" method="post"
+         input type="text" name="text" placeholder="Answer the post"/
+         input type="submit" value="Post reply"
+   -else 
+         p
+            'Want to answer the thread? Please 
+            a href="/login" Login
+            print  or   
+            a href="/user/register" Register
+         p
+   hr
+      - answer_all.each do |answer|
+         hr
+         = answer["Text"]
+         br      
+         br      
+         'Posted by:
+         = answer["Username"] 
+         // td = thread["Postid"] 
+         -if (session[:userid] == answer["Userid"]) or session[:admin] == 1 
+            br
+            / a href="/answer_delete?id=#{answer["Answerid"]}" Delete answer
+            a href="/posts/#{params[:id]}/answer_delete/#{answer["Answerid"]}" Delete answer
+            br
+            a href="/posts/#{params[:id]}/answer_edit/#{answer["Answerid"]}" Edit answer
+

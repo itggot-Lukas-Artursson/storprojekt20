@@ -1,0 +1,10 @@
+form action="/" 
+ input type="submit" value="Home"
+
+h2 New category
+form action="/categories/new" method="post" enctype="multipart/form-data"
+    input type="text" name="name" placeholder="Category name"/
+    input type="submit" value="Create"/
+
+        
+-session[:requester] ||= request.referer

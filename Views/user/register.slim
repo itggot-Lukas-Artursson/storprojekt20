@@ -1,0 +1,14 @@
+form action="/" 
+ input type="submit" value="Home"
+
+h2 Register
+form action="/user/register" method="post"
+    input type="text" name="username" placeholder="username"
+    input type="text" name="email" placeholder="email"
+    input type="password" name="password" placeholder="password"/
+    input type="submit" value="Register"
+
+-if not session[:error].nil? 
+    br
+    = session[:error]
+    -session[:error] = nil

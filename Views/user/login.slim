@@ -1,7 +1,14 @@
-h2 login
+form action="/" 
+ input type="submit" value="Home"
+
+h2 Login
 form action="/login" method="post"
-    input type="text" name="username" placeholder="username or email"/
+    input type="text" name="email" placeholder="Email"/
     input type="password" name="password" placeholder="password"/
     input type="submit" value="login"/
 
+-if not session[:error].nil?
+    br
+    = session[:error]
+    -session[:error] = nil
     

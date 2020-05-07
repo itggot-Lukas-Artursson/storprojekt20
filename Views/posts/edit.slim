@@ -1,0 +1,13 @@
+form action="/" 
+ input type="submit" value="Home"
+h2 Edit post
+form action="/posts/#{params[:id]}/edit" method="post"
+    input type="text" name="text" value="#{text}"/
+    input type="submit" value="Edit"/
+
+-if not session[:error].nil?
+    br
+    = session[:error]
+    -session[:error] = nil
+
+-session[:requester] = request.referer

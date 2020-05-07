@@ -1,0 +1,22 @@
+form action="/" 
+ input type="submit" value="Home"
+
+h2 
+  -category_info.each do |info|
+    =info["Name"]
+    body  
+    nav
+    
+    / form action="/post_new?id=#{info["CategoryID"]}"
+    form action="/categories/#{params[:id]}/new_post" method="get"
+        / input type="hidden" name="id" value="#{info["CategoryID"]}"/      
+        input type="submit" value="Create your own post?"   
+
+    table
+      -category_posts.each do |post|
+          tr
+            td 
+              - id = post["Postid"]
+              a href="/posts/#{id}" = post["Heading"]
+
+

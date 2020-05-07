@@ -1,0 +1,30 @@
+form action="/" 
+ input type="submit" value="Home"
+
+- session[:requester]=request.referer
+h1 
+   = headline
+
+-if not session[:error].nil?
+   h4
+      = session[:error]
+      -session[:error] = nil
+      br
+      br
+
+- categories.each do |category| 
+      / = category["Categoryid"]
+      / br
+      = category["Name"]   
+      br
+      -if category["Postid"].nil?
+         form action="/posts/#{params[:id]}/connect/#{category["Categoryid"]}" method="get"
+            input type="submit" value="Connect"   
+      -else
+         form action="/posts/#{params[:id]}/disconnect/#{category["Categoryid"]}" method="get"
+            input type="submit" value="Disconnect"
+
+br
+form action="/posts/#{params[:id]}"
+    input type="submit" value="Finished"
+   

@@ -1,0 +1,27 @@
+
+h1 Everything for the kitchen
+body
+ nav
+h2 Categories 
+table
+    -if session[:admin] == 1
+      a href="/categories/new" New category
+    -categories.each do |category|
+      tr
+        td 
+          - id = category["Categoryid"] 
+          h3
+            a href="/categories/#{id}" = category["Name"] 
+          -if session[:admin] == 1
+            a href="/categories/#{id}/delete" Delete category
+br
+
+- if not session[:userid]
+  a href="/login" login
+  p 
+    'dont have an account?, Register here
+  a href="/user/register" Register
+  p       
+- else
+  form action="/logout" 
+    input type="submit" value="logout"
