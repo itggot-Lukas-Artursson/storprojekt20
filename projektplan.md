@@ -3,7 +3,7 @@
 ## 1. eeee1111TestProjektbeskrivning (Beskriv vad sidan ska kunna göra)
 Sidan är ett forum för allt som har med matlagning att göra. Du som användare kan skapa inlägg i olika kategorier, svara på olika trådar och som adin kan du skapa kategorier där olika trådar ligger.
 ## 2. Vyer (visa bildskisser på dina sidor)
-Jag placerade skissen och ER-diagramet utanför. 
+Jag placerade skissen och ER-diagramet utanför eftersom jag inte vet ur man får in bilder här.
 
 ## 3. Databas med ER-diagram (Bild)
 ## 4. Arkitektur (Beskriv filer och mappar - vad gör/inehåller de?)
