@@ -2,7 +2,6 @@ require 'sinatra'
 require 'bcrypt'
 require 'byebug'
 require 'slim'
-require 'sqlite3'
 require_relative './model.rb'
 include Model
 
@@ -48,6 +47,8 @@ post('/login') do
         session[:error]="Wrong password"
         redirect('/login')
     else
+        session[:userid] = id
+        session[:admin] = get_admin_role(id)
         session[:error]=nil
         redirect('/')
     end
@@ -67,13 +68,29 @@ end
 #
 # @see Model#user_register 
 post('/user/register') do
-    validate(1, params[:email])
-    validate(2, params[:email])
-    validate(2, params[:username])
-    validate(2, params[:password])
-    user_register()
-    session[:error]=nil
-    redirect('/login')
+
+    if validate(1, params[:email]) == false
+        session[:error]="Email missing @"
+        redirect back
+    end
+
+    if validate(2, params[:email]) == false or validate(2, params[:username]) == false or validate(2, params[:password]) == false
+        session[:error]="You must fill in all fields"
+        redirect back
+    end
+    email = params[:email]
+    username = params[:username]
+    password = params[:password]
+
+    result = user_register(email, username, password)
+    if result==false
+        session[:error]="User already exists"
+        redirect back
+        # redirect('/user/register')
+    else
+        session[:error]=nil
+        redirect('/login')
+    end
 end
 
 
@@ -131,6 +148,7 @@ end
 # @see Model#answer_info 
 get('/posts/:id') do
     result_post = post_info(params[:id])
+    session[:postid] = params[:id]
     result_answer = answer_info(params[:id])
     slim(:"posts/thread",locals:{thread_all:result_post, answer_all:result_answer})
 end
@@ -222,7 +240,9 @@ end
 # 
 # @see Model#answer_new
 post('/posts/:id/answer_new') do 
-    answer_new(params[:text])
+    postid = session[:postid]
+    userid = session[:userid]
+    answer_new(params[:text], postid, userid)
     redirect(request.referer)
 end
 

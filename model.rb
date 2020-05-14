@@ -1,4 +1,5 @@
 module Model
+require 'sqlite3'
 db = SQLite3::Database.new("db/databas_storprojekt.db")
 db.results_as_hash = true 
 
@@ -12,12 +13,13 @@ db.results_as_hash = true
     end
 	
     # Register new user
+    # 
+    # @param [String] email Email of user
+    # @param [String] username username
+    # @param [String] password password
     #
     # @return [Integer] The ID of the user
-	def user_register()
-        email = params[:email]
-        username = params[:username]
-        password = params[:password]
+	def user_register(email, username, password)
         password_digest = BCrypt::Password.create(password)
         db = connect_to_db()
         result = db.execute("SELECT Username from user where Username=? or email=?", username, email)
@@ -25,9 +27,9 @@ db.results_as_hash = true
             db.execute('INSERT INTO User (Username, Email, Password_digest) VALUES (?,?,?)', username, email, password_digest)
             userid = query_db_one('SELECT last_insert_rowid() as Result',db)
             db.execute('INSERT INTO Relation_user_userrole (Userid, Roleid) VALUES (?,1)', userid)
+            return true
         else
-            session[:error]="User already exists"
-            redirect('/')
+            return false
         end
     end
 
@@ -46,9 +48,7 @@ db.results_as_hash = true
         end
 
         if BCrypt::Password.new(result.first["Password_digest"]) == password
-            session[:userid] = result.first["Userid"]
-            session[:admin] = get_admin_role(result.first["Userid"])
-            return result.first["id"]
+            return result.first["Userid"]
         else 
             return -2       
         end
@@ -136,7 +136,6 @@ db.results_as_hash = true
     def post_info(id)
         db = connect_to_db()
         result = db.execute("SELECT Postid, Heading, Text, Username, u.Userid FROM Post p inner join User u ON p.Userid=u.Userid WHERE Postid=#{id}")
-        session[:postid] = id
         return result   
     end
 
@@ -240,14 +239,14 @@ db.results_as_hash = true
 
     # Create new answer to post
     #
-	# @param [String] text, Text of the answer
+    # @param [String] text, Text of the answer
+    # @param [integer] userid, userid of the user
+    # @param [integer] postid, postid of the answer
 	#
     # @return [Hash]
     #   * :Name [String] The name of the category.
     #   * :Categoryid [Integer] The ID of the category.
-    def answer_new(text)
-        postid = session[:postid]
-        userid = session[:userid]
+    def answer_new(text, postid, userid)
         db = connect_to_db()
         db.execute("INSERT INTO Answer (Text, Userid, Postid) VALUES (?,?,?)", text, userid, postid)
     end
@@ -290,7 +289,6 @@ db.results_as_hash = true
         db.execute("UPDATE Answer SET Text=? WHERE Answerid=?",text,answerid)
     end
 
-
     # Get a single value from DB
     #
 	# @param [String] query The database query
@@ -310,19 +308,16 @@ db.results_as_hash = true
     def validate(type, check_value) 
         if type==1   
             if check_value.include?("@")
-                return
+                return true
             else  
-                session[:error]="Email missing @"
-                redirect back
+               return false
             end
         elsif type==2
             if check_value.empty? == false
-                return
+                return true
             else  
-                session[:error]="You must fill in all fields"
-                redirect back
+                return false
             end
         end
     end
-
 end
